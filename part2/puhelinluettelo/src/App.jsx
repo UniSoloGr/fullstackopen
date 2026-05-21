@@ -1,5 +1,13 @@
 import { useState } from 'react'
 
+const Person = (props) => {
+  return (
+    <li>
+      {props.name}
+    </li>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas' }
@@ -8,6 +16,11 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
+    if (persons.map((person) => person.name).includes(newName)) {
+      let message = `${newName} is already added to phonebook`
+      alert(message)
+      return
+    }
     const person = {
       name: newName,
     }
@@ -19,6 +32,10 @@ const App = () => {
     setNewName(event.target.value)
   }
 
+
+
+  console.log(persons)
+  console.log(persons[0].name)
   return (
     <div>
       <h2>Phonebook</h2>
@@ -31,6 +48,11 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
+      <ul>
+        {persons.map((person) => (
+          <Person name={person.name} />
+        ))}
+      </ul>
     </div>
   )
 
