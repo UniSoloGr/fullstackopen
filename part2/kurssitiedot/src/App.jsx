@@ -12,10 +12,11 @@ const Part = (props) => {
 
 const Content = (props) => {
   return (
-    <ul>
+    <ul style={{ listStyleType: 'none', padding: 0 }}>
       {props.parts.map(part =>
         <Part name={part.name} exercises={part.exercises} />
       )}
+      <Total parts={props.parts} />
     </ul>
   )
 }
@@ -26,6 +27,14 @@ const Course = (props) => {
       <Header name={props.course.name} />
       <Content parts={props.course.parts} />
     </>
+  )
+}
+
+const Total = (props) => {
+  return (
+    <li style={{ fontWeight: 'bold' }}>
+      total of {props.parts.map(part => part.exercises).reduce((totalExercises, exercise) => totalExercises + exercise, 0)} exercises
+    </li>
   )
 }
 
