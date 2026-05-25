@@ -1,4 +1,5 @@
 import axios from 'axios'
+import phonenumberService from './services/phonenumbers'
 import { useState, useEffect } from 'react'
 
 const Person = (props) => {
@@ -56,18 +57,13 @@ const App = () => {
       person.name.toLowerCase().includes(nameFilter.toLowerCase())
     )
 
-
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+  useEffect(() => {
+    phonenumberService
+      .getAll()
+      .then(initialPersons =>{
+        setPersons(initialPersons)
       })
-  }
-  useEffect(hook, [])
-
+  }, [])
 
 
   const addPerson = (event) => {
@@ -81,9 +77,13 @@ const App = () => {
       name: newName,
       number: newNumber,
     }
-    setPersons(persons.concat(person))
-    setNewName('')
-    setNewNumber('')
+    phonenumberService
+      .create(person)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
   }
 
   const handleNameChange = (event) => {
