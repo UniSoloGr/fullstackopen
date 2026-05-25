@@ -6,7 +6,16 @@ const Person = (props) => {
   return (
     <li>
       {props.person.name} {props.person.number}
+      <Button onClick={() => props.removePerson(props.person.id)} text="delete"/>
     </li>
+  )
+}
+
+const Button = (props) => {
+  return (
+    <>
+      <button onClick={props.onClick}>{props.text}</button>
+    </>
   )
 }
 
@@ -38,7 +47,7 @@ const Persons = (props) => {
   return (
     <ul>
       {props.persons.map((person) => (
-        <Person key={person.name} person={person} />
+        <Person key={person.name} person={person} removePerson={props.removePerson} id={person.id}/>
       ))}
     </ul>
   )
@@ -85,6 +94,20 @@ const App = () => {
           setNewNumber('')
         })
   }
+  
+  const removePerson = (id) => {
+    const person = persons.find(person => person.id === id).name
+    const message = `Delete ${person} ?`
+    if (confirm(message)) {
+      phonenumberService
+        .remove(id)
+          .then(() => {
+            setPersons(
+              persons.filter(person => person.id !== id)
+            )
+          })
+    }
+  }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -111,7 +134,7 @@ const App = () => {
       <h2>Add a new</h2>
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} removePerson={removePerson}/>
     </div>
   )
 }
