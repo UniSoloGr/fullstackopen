@@ -77,22 +77,38 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    if (persons.map((person) => person.name).includes(newName)) {
-      let message = `${newName} is already added to phonebook`
-      alert(message)
-      return
-    }
+    // if (persons.map((person) => person.name).includes(newName)) {
+    //   let message = `${newName} is already added to phonebook`
+    //   alert(message)
+    //   return
+    // }
     const person = {
       name: newName,
       number: newNumber,
     }
-    phonenumberService
-      .create(person)
+
+    const oldPerson = persons.find(oldPerson => oldPerson.name === person.name)
+
+    const message = `${person.name} is already added to phonebook, replace the old number with a new one?`
+    if (oldPerson && oldPerson.number.length === 0) {
+      phonenumberService.update(oldPerson.id, person)
         .then(returnedPerson => {
-          setPersons(persons.concat(returnedPerson))
-          setNewName('')
-          setNewNumber('')
+          setPersons(persons.map(person => person.id !== oldPerson.id ? person : returnedPerson))
         })
+    } else if (oldPerson && confirm(message)) {
+      phonenumberService.update(oldPerson.id, person)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== oldPerson.id ? person : returnedPerson))
+        })
+    } else {
+      phonenumberService
+        .create(person)
+          .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+    }
   }
   
   const removePerson = (id) => {
