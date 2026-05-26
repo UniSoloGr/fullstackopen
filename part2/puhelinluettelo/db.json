@@ -1,19 +1,14 @@
 {
   "persons": [
     {
-      "name": "ewgwg",
-      "number": "egwg",
-      "id": "-vWN7-uIY9Q"
+      "name": "323",
+      "number": "",
+      "id": "QYy-7e04yoI"
     },
     {
-      "name": "art",
-      "number": "7",
-      "id": "fhSFf2Yx40U"
-    },
-    {
-      "name": "arto",
-      "number": "7",
-      "id": "lsw_BWFTnNw"
+      "name": "ate",
+      "number": "4",
+      "id": "1WKutB-lTZ8"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
