@@ -55,39 +55,45 @@ app.get(apiPersons + '/:id', (request, response) => {
   }
 })
 
-// app.delete(apiLink + '/:id', (request, response) => {
-//   const id = request.params.id
-//   persons = persons.filter(note => note.id !== id)
+app.delete(apiPersons + '/:id', (request, response) => {
+  const id = request.params.id
+  persons = persons.filter(person => person.id !== id)
 
-//   response.status(204).end()
-// })
+  response.status(204).end()
+})
 
-// const generateId = () => {
-//   const maxId = persons.length > 0
-//     ? Math.max(...persons.map(n => Number(n.id)))
-//     : 0
-//   return String(maxId + 1)
-// }
+const generateId = (max) => {
+  return Math.floor(Math.random() * max)
+}
 
-// app.post(apiLink, (request, response) => {
-//   const body = request.body
+app.post(apiPersons, (request, response) => {
+  const errorMessage = (message) => {
+    return response.status(400).json({
+      error: `${message}`
+    })
+  }
+  const body = request.body
 
-//   if (!body.content) {
-//     return response.status(400).json({
-//       error: 'content missing'
-//     })
-//   }
+  if (!body.name) {
+    errorMessage(`name missing`)
+  } else if (!body.number) {
+    errorMessage('number missing')
+  } else if (persons.find(person => person.name === body.name)) {
+    errorMessage('name must be unique!')
+  }
 
-//   const note = {
-//     content: body.content,
-//     important: body.important || false,
-//     id: generateId(),
-//   }
+  const id = generateId(10**6)
 
-// persons = persons.concat(note)
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: id,
+  }
 
-//   response.json(note)
-// })
+  persons = persons.concat(person)
+
+  response.json(person)
+})
 
 
 const PORT = 3001
