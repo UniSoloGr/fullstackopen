@@ -4,11 +4,8 @@ import { useState, useEffect } from 'react'
 const Countries = (props) => {
   const matchingCountries = props.countries
   const matchingCountrieslength = matchingCountries.length
-
-
-  console.log(matchingCountrieslength);
-  console.log(props)
-  if (matchingCountrieslength <= 0) {
+  
+  if (matchingCountrieslength <= 0 || props.search.length === 0) {
     return
   } else if (matchingCountrieslength > 10) {
     return <>Too many matches, specify another filter</>
@@ -17,23 +14,38 @@ const Countries = (props) => {
   } else {
     return (
       <ul>
-        {matchingCountries.map(country => {
+        {matchingCountries.map(country => (
           <Country country={country}></Country>
-        })}
+        ))}
       </ul>
     )
   }
 }
 
-const CountryDetailed = (props) => {
-  console.log(props)
-  return (
-    <li>
-      {props.country.name.common}
-    </li>
-  )
+const CountryDetailed = ({country}) => {
+  if (country) {
+    return (
+      <>
+      <h1>{country.name.common}</h1>
+      <div>
+        {country.capital}
+      </div>
+      <div>
+        Area {country.area}
+      </div>
+      <h2>Languages</h2>
+      <ul>
+        {Object.values(country.languages).map(language => (
+          <li>{language}</li>
+        ))}
+      </ul>
+      <img src={country.flags.png}></img>
+      </>
+    )
+  } else {
+    return
+  }
 }
-
 
 const Country = (props) => {
   return (
@@ -43,11 +55,14 @@ const Country = (props) => {
   )
 }
 
+
+const Header1 = (props) => { 
+  return <h1>props.text</h1>
+ }
+
 const App = () => {
   const [countries, setCountries ] = useState([])
-  // const [matchingCountries, setMatchingCountries] = useState([])
-  const [country, setCountry] = useState([])
-  // const [countryName, setCountryName] = useState(null)
+  const [country, setCountry] = useState(null)
   const [search, setSearch] = useState('')
 
   const allCountriesLink = 'https://studies.cs.helsinki.fi/restcountries/api/all'
@@ -61,39 +76,29 @@ const App = () => {
       })
   }
 
-  // const getCountry = () => {
-  //   console.log("ok");
-  //   if (countryName) {
-  //     axios
-  //       .get(`${linkToCountry}${country}`)
-  //       .then(response => {
-  //         setCountry(response.data)
-  //       })
-  //     }
-  //   }
+  const getCountry = () => {
+    if (countryName) {
+      axios
+        .get(`${linkToCountry}${countryName}`)
+        .then(response => {
+          setCountry(response.data)
+        })
+      } else {
+        setCountry(null)
+      }
+    }
 
   const matchingCountries = countries
                         .filter(country =>
                         country.name.common.toLowerCase().includes(search.toLowerCase()))
-  console.log(matchingCountries);
-  // console.log(countries)
-  // console.log(search);
-  // console.log(countries
-  //   .filter(country => country.name.common.toLowerCase().includes(search.toLowerCase()))
-  // );
-
-  
-
     
-  if (matchingCountries.length === 1) {
-    const countryName = matchingCountries[0].name.common
-  } else {
-    const countryName = null
-    setCountry([])
-  }
+  const countryName =
+    matchingCountries.length === 1
+      ? matchingCountries[0].name.common
+      : null
 
+  useEffect(getCountry, [countryName])
   useEffect(getAllCountries, [])
-  // useEffect(getCountry, [countryName])
 
   const handleChange = (event) => {
     event.preventDefault()
@@ -106,7 +111,7 @@ const App = () => {
         find countries: 
         <input value={search} onChange={handleChange}></input>
       </form>
-      {/* <Countries search={search} countries={matchingCountries} country={country} ></Countries> */}
+      <Countries countries={matchingCountries} country={country} search={search} ></Countries>
     </div>
     )
   }
