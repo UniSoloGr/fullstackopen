@@ -1,6 +1,6 @@
 const express = require('express')
-const morgan = require('morgan')
 const app = express()
+const cors = require('cors')
 
 const apiPersons= "/api/persons"
 let persons = [
@@ -27,21 +27,9 @@ let persons = [
 ]
 
 app.use(express.json())
-app.use(morgan(function (tokens, req, res) {
-  let body = ''
-  if (req.body) {
-    body = JSON.stringify(req.body)
-  }
-
-  return [
-    tokens.method(req, res),
-    tokens.url(req, res),
-    tokens.status(req, res),
-    tokens.res(req, res, 'content-length'), '-',
-    tokens['response-time'](req, res), 'ms',
-    body
-  ].join(' ')
-}))
+app.use(express.static('dist'))
+app.use(cors())
+console.log(persons)
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello world!</h1>')
@@ -110,8 +98,8 @@ app.post(apiPersons, (request, response) => {
   response.json(person)
 })
 
-const PORT = 3001
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
-  console.log(`Updated: ${Date().toString()}`)
 })

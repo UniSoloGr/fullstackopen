@@ -110,7 +110,7 @@ const App = () => {
             showMessage(`Successfully changed ${person.name}'s phone number!`, "success")
           })
           .catch(error => {
-            showMessage("Couldn't change the person's data, try again!", "error")
+            showMessage("Error occured, try again!", "error")
           })
       }
     } else {
