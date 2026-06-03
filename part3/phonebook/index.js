@@ -27,12 +27,10 @@ let persons = [
 ]
 
 app.use(express.json())
-// app.use(morgan("tiny"))
-// console.log(persons)
 app.use(morgan(function (tokens, req, res) {
   let body = ''
   if (req.body) {
-    body = JSON.stringify(req.body).toString()
+    body = JSON.stringify(req.body)
   }
 
   return [
@@ -110,13 +108,6 @@ app.post(apiPersons, (request, response) => {
   persons = persons.concat(person)
 
   response.json(person)
-})
-
-morgan.token("data", function(req, res) {
-  if (req.body) {
-    return req.body
-  }
-  return req.headers['content-type']
 })
 
 const PORT = 3001
