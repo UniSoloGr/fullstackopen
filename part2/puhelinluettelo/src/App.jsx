@@ -1,4 +1,3 @@
-import axios from 'axios'
 import phonenumberService from './services/phonenumbers'
 import { useState, useEffect } from 'react'
 import './index.css'
@@ -110,7 +109,7 @@ const App = () => {
             showMessage(`Successfully changed ${person.name}'s phone number!`, "success")
           })
           .catch(error => {
-            showMessage("Couldn't change the person's data, try again!", "error")
+            showMessage(`Information of ${person.name} has already been removed from server`, "error")
           })
       }
     } else {
