@@ -16,25 +16,42 @@ const App = () => {
   const [votes, setVotes] = useState(
     Array(anecdotes.length).fill(0)
   )
+  const [mostVotesIndex, setMostVotesIndex] = useState(0)
 
   const getRandomIntInclusive = ({min, max}) => {
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
 
   const increaseVote = (i) => {
-    const copy = { ...votes }
+    const copy = [ ...votes ]
     copy[i] += 1
     setVotes(copy)
+    mostVotes(copy)
+  }
+
+  const mostVotes = (votesCopy) => {
+    let maxIndex = 0
+    for (let i = 0; i < votesCopy.length; i++) {
+      if (votesCopy[i] > votesCopy[maxIndex]) {
+        maxIndex = i
+      }
+    }
+    setMostVotesIndex(maxIndex)
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <div/>
       has {votes[selected]} votes
       <div/>
       <button onClick={() => setSelected(getRandomIntInclusive({min:0, max:anecdotes.length - 1}))}>next anecdote</button>
       <button onClick={() => increaseVote(selected)}>vote</button>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[mostVotesIndex]}
+      <div/>
+      has {votes[mostVotesIndex]} votes
     </div>
   )
 }
