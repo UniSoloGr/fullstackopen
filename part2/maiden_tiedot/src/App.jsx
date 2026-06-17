@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 
+const weather_api_key = import.meta.env.VITE_WEATHER_API_KEY
+
 const Countries = (props) => {
   const matchingCountries = props.countries
   const matchingCountrieslength = matchingCountries.length
@@ -8,7 +10,7 @@ const Countries = (props) => {
   if (matchingCountrieslength <= 0 || props.search.length === 0) {
     return null
   } else if (props.country != null) {
-    return <CountryDetailed country={props.country}></CountryDetailed>
+    return <CountryDetailed country={props.country} weather={props.weather}></CountryDetailed>
   } else if (matchingCountrieslength > 10) {
     return <>Too many matches, specify another filter</>
   } else if (matchingCountrieslength === 1) {
@@ -24,10 +26,14 @@ const Countries = (props) => {
   }
 }
 
-const CountryDetailed = ({country}) => {
-  if (country) {
-    return (
-      <>
+const CountryDetailed = ({country, weather}) => {
+  if (!country || !weather) {
+    return null
+  }
+  const weatherIconLink = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+
+  return (
+    <>
       <h1>{country.name.common}</h1>
       <div>
         {country.capital}
@@ -42,11 +48,17 @@ const CountryDetailed = ({country}) => {
         ))}
       </ul>
       <img src={country.flags.png}></img>
-      </>
-    )
-  } else {
-    return
-  }
+      <h2>Weather in {country.capital}</h2>
+      <div>
+        Temperature {weather.main.temp} Celsius
+      </div>
+      <img src={weatherIconLink} alt={weather.weather[0].description}>
+      </img>
+      <div>
+        Wind {weather.wind.speed} m/s
+      </div>
+    </>
+  )
 }
 
 const Country = (props) => {
@@ -62,10 +74,17 @@ const Country = (props) => {
 const App = () => {
   const [countries, setCountries ] = useState([])
   const [country, setCountry] = useState(null)
+  const [weather, setWeather] = useState(null)
   const [search, setSearch] = useState('')
 
   const allCountriesLink = 'https://studies.cs.helsinki.fi/restcountries/api/all'
   const linkToCountry = 'https://studies.cs.helsinki.fi/restcountries/api/name/'
+
+  const getLinkToCountryWeather = (latlng) => {
+    const [lat, lon] = latlng
+    const link = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weather_api_key}&units=metric`
+    return link
+  }
 
   const getAllCountries = () => {
     axios
@@ -76,16 +95,30 @@ const App = () => {
   }
 
   const getCountry = () => {
-    if (countryName) {
-      axios
-        .get(`${linkToCountry}${countryName}`)
-        .then(response => {
-          setCountry(response.data)
-        })
-      } else {
-        setCountry(null)
-      }
+    if (!countryName) {
+      setCountry(null)
+      setWeather(null)
+      return
     }
+
+    axios
+      .get(`${linkToCountry}${countryName}`)
+      .then(response => {
+        const countryData = response.data
+        setCountry(countryData)
+        const latlng = countryData.capitalInfo.latlng || countryData.latlng
+        return axios.get(
+          `${getLinkToCountryWeather(latlng)}`
+        )
+      })
+      .then(weatherResponse => {
+        const weatherData = weatherResponse.data
+        setWeather(weatherData)
+      })
+      .catch(error => {
+        console.error("API error:", error)
+      })
+  }
 
   const showCountry = (country) => {
     setSearch(country)
@@ -114,7 +147,7 @@ const App = () => {
         find countries: 
         <input value={search} onChange={handleChange}></input>
       </form>
-      <Countries countries={matchingCountries} country={country} search={search} showCountry={showCountry}></Countries>
+      <Countries countries={matchingCountries} country={country} weather={weather} search={search} showCountry={showCountry}></Countries>
     </div>
     )
   }
