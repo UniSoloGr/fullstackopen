@@ -6,7 +6,9 @@ const Countries = (props) => {
   const matchingCountrieslength = matchingCountries.length
   
   if (matchingCountrieslength <= 0 || props.search.length === 0) {
-    return
+    return null
+  } else if (props.country != null) {
+    return <CountryDetailed country={props.country}></CountryDetailed>
   } else if (matchingCountrieslength > 10) {
     return <>Too many matches, specify another filter</>
   } else if (matchingCountrieslength === 1) {
@@ -15,7 +17,7 @@ const Countries = (props) => {
     return (
       <ul>
         {matchingCountries.map(country => (
-          <Country country={country}></Country>
+          <Country country={country} showCountry={props.showCountry}></Country>
         ))}
       </ul>
     )
@@ -51,14 +53,11 @@ const Country = (props) => {
   return (
     <li>
       {props.country.name.common}
+      <button onClick={() => props.showCountry(props.country.name.common)}>show</button>
     </li>
   )
 }
 
-
-const Header1 = (props) => { 
-  return <h1>props.text</h1>
- }
 
 const App = () => {
   const [countries, setCountries ] = useState([])
@@ -88,6 +87,10 @@ const App = () => {
       }
     }
 
+  const showCountry = (country) => {
+    setSearch(country)
+  }
+
   const matchingCountries = countries
                         .filter(country =>
                         country.name.common.toLowerCase().includes(search.toLowerCase()))
@@ -111,7 +114,7 @@ const App = () => {
         find countries: 
         <input value={search} onChange={handleChange}></input>
       </form>
-      <Countries countries={matchingCountries} country={country} search={search} ></Countries>
+      <Countries countries={matchingCountries} country={country} search={search} showCountry={showCountry}></Countries>
     </div>
     )
   }
