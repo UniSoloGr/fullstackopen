@@ -11,6 +11,12 @@ const url = `mongodb+srv://raceer:${password}@klusteri.6u46jbz.mongodb.net/phone
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url, { family: 4 })
+    .then(result => {
+        console.log('connected to MongoDB')
+    })
+    .catch((error) => {
+        console.log('error connecting to MongoDB:', error.message)
+    })
 
 
 const phonebookSchema = new mongoose.Schema({
@@ -45,7 +51,6 @@ const getAllEntries = () => {
 if (process.argv.length === 5) {
     const name = process.argv[3]
     const phone = process.argv[4]
-
     newEntry(name, phone)
 } else if (process.argv.length === 3) {
     getAllEntries()
