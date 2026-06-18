@@ -90,6 +90,26 @@ app.post(apiPersons, (request, response, next) => {
     .catch(error => next(error))
 })
 
+app.put(apiPersons + '/:id', (request, response, next) => {
+  const {name, number} = request.body
+
+  Person.findById(request.params.id)
+    .then(person => {
+      if (!person) {
+        return response.status(404).end()
+      }
+
+      console.log(person)
+      person.name = name
+      person.number = number
+
+      return person.save().then((updatedPerson) => {
+        response.json(updatedPerson)
+      })
+    })
+    .catch(error => next(error))
+})
+
 app.delete(apiPersons + '/:id', (request, response, next) => {
   const id = request.params.id
   Person.findByIdAndDelete(id)
