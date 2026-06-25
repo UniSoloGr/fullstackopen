@@ -84,6 +84,7 @@ const App = () => {
       .getAll()
       .then(initialPersons =>{
         setPersons(initialPersons)
+        console.log(initialPersons)
       })
   }, [])
 
@@ -110,7 +111,7 @@ const App = () => {
             showMessage(`Successfully changed ${person.name}'s phone number!`, "success")
           })
           .catch(error => {
-            showMessage("Error occured, try again!", "error")
+            showMessage("Couldn't change the data!", "error")
           })
       }
     } else {
@@ -123,7 +124,10 @@ const App = () => {
             showMessage(`Successfully added ${person.name}!`, "success")
           })
           .catch(error => {
-            showMessage("Error occured, try again!", "error")
+            showMessage(
+              error.response.data.error.toString(),
+              "error"
+            )
           })
     }
   }
@@ -168,7 +172,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h2>Phonebook v2</h2>
       <Notification message={message} />
       <Filter nameFilter={nameFilter} handleNameFilterChange={handleNameFilterChange} />
       <h2>Add a new</h2>
