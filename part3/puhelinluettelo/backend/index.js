@@ -5,7 +5,7 @@ const Person = require('./models/person')
 
 const app = express()
 
-const apiPersons= "/api/persons"
+const apiPersons= '/api/persons'
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -75,12 +75,12 @@ app.post(apiPersons, (request, response, next) => {
   const body = request.body
 
   if (!body.name) {
-    return errorMessage(`name missing`)
-  } 
+    return errorMessage('name missing')
+  }
 
   if (!body.number) {
     return errorMessage('number missing')
-  } 
+  }
 
   const person = new Person({
     name: body.name,
@@ -90,13 +90,13 @@ app.post(apiPersons, (request, response, next) => {
 
   person.save()
     .then((savedPerson) => {
-    response.json(savedPerson)
+      response.json(savedPerson)
     })
     .catch(error => next(error))
 })
 
 app.put(apiPersons + '/:id', (request, response, next) => {
-  const {name, number} = request.body
+  const { name, number } = request.body
 
   Person.findById(request.params.id)
     .then(person => {
