@@ -33,7 +33,7 @@ test('the returned object\'s id is in the right format', async () => {
     assert.strictEqual(response.body[0].id !== undefined, true)
 })
 
-test.only('new blog addition happens as expected', async () => {
+test('new blog addition happens as expected', async () => {
     const title = "Addition happens as expected"
     const newBlog = {
         title: title,
@@ -49,6 +49,22 @@ test.only('new blog addition happens as expected', async () => {
     
     assert.strictEqual(helper.initialBlogs.length + 1, blogsAfterAddition.length)
     assert.strictEqual(response.body.title, title)
+})
+
+test.only('empty like field defaults to 0', async () => {
+    const title = "zero likes"
+    const newBlog = {
+        title: title,
+        author: "me"
+    }
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+
+    const blogsAfterAddition = await Blog.find({})
+    
+    assert.strictEqual(response.body.likes, 0)
 })
 
 after(async () => {
