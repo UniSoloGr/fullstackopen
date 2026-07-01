@@ -13,7 +13,7 @@ beforeEach(async () => {
     await Blog.insertMany(helper.initialBlogs)
 })
 
-test.only('correct amount of blogs is returned as json', async () => {
+test('correct amount of blogs is returned as json', async () => {
     const response = await api
         .get('/api/blogs')
         .expect(200)
@@ -22,6 +22,15 @@ test.only('correct amount of blogs is returned as json', async () => {
     const blogs = await helper.blogsInDb()
     
     assert.strictEqual(response.body.length, blogs.length)
+})
+
+test.only('the returned object\'s id is in the right format', async () => {
+    const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+    
+    assert.strictEqual(response.body[0].id !== undefined, true)
 })
 
 after(async () => {
