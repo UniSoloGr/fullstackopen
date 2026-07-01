@@ -51,7 +51,7 @@ test('new blog addition happens as expected', async () => {
     assert.strictEqual(response.body.title, title)
 })
 
-test.only('empty like field defaults to 0', async () => {
+test('empty like field defaults to 0', async () => {
     const title = "zero likes"
     const newBlog = {
         title: title,
@@ -61,10 +61,18 @@ test.only('empty like field defaults to 0', async () => {
         .post('/api/blogs')
         .send(newBlog)
         .expect(201)
-
-    const blogsAfterAddition = await Blog.find({})
     
     assert.strictEqual(response.body.likes, 0)
+})
+
+test.only('title and url are required', async () => {
+    const newBlog = {
+        author: "me"
+    }
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
 })
 
 after(async () => {

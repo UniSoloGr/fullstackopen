@@ -6,10 +6,21 @@ const blogsRouter = require('./controllers/blogs')
 
 const app = express()
 
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    if (error.name === "ValidationError") {
+        return response.status(400).json({
+            error: error.message
+        })
+    }
+}
+
 const mongoUrl = process.env.MONGODB_URI
 mongoose.connect(mongoUrl, { family: 4 })
 
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
+
+app.use(errorHandler)
 
 module.exports = app
