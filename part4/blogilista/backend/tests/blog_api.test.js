@@ -24,13 +24,31 @@ test('correct amount of blogs is returned as json', async () => {
     assert.strictEqual(response.body.length, blogs.length)
 })
 
-test.only('the returned object\'s id is in the right format', async () => {
+test('the returned object\'s id is in the right format', async () => {
     const response = await api
         .get('/api/blogs')
         .expect(200)
         .expect('Content-Type', /application\/json/)
     
     assert.strictEqual(response.body[0].id !== undefined, true)
+})
+
+test.only('new blog addition happens as expected', async () => {
+    const title = "Addition happens as expected"
+    const newBlog = {
+        title: title,
+        author: "me",
+        likes: 10
+    }
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+
+    const blogsAfterAddition = await Blog.find({})
+    
+    assert.strictEqual(helper.initialBlogs.length + 1, blogsAfterAddition.length)
+    assert.strictEqual(response.body.title, title)
 })
 
 after(async () => {
