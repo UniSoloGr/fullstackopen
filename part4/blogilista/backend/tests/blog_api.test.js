@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -8,71 +8,91 @@ const Blog = require('../models/blog')
 
 const api = supertest(app)
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
+describe('when there\'s initially some blogs saved', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+        await Blog.insertMany(helper.initialBlogs)
+    })
+
+    test('correct amount of blogs is returned as json', async () => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        const blogs = await helper.blogsInDb()
+        
+        assert.strictEqual(response.body.length, blogs.length)
+    })
+
+    test('the returned object\'s id is in the right format', async () => {
+        const response = await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        
+        assert.strictEqual(response.body[0].id !== undefined, true)
+    })
 })
 
-test('correct amount of blogs is returned as json', async () => {
-    const response = await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
+describe("addition of a new blog", () => {
+    test('new blog addition happens as expected', async () => {
+        const title = "Addition happens as expected"
+        const newBlog = {
+            title: title,
+            author: "me",
+            likes: 10
+        }
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
 
-    const blogs = await helper.blogsInDb()
-    
-    assert.strictEqual(response.body.length, blogs.length)
+        const blogsAfterAddition = await Blog.find({})
+        
+        assert.strictEqual(helper.initialBlogs.length + 1, blogsAfterAddition.length)
+        assert.strictEqual(response.body.title, title)
+    })
+
+    test('empty like field defaults to 0', async () => {
+        const title = "zero likes"
+        const newBlog = {
+            title: title,
+            author: "me"
+        }
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+        
+        assert.strictEqual(response.body.likes, 0)
+    })
+
+    test('title and url are required', async () => {
+        const newBlog = {
+            author: "me"
+        }
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+})
 })
 
-test('the returned object\'s id is in the right format', async () => {
-    const response = await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-    
-    assert.strictEqual(response.body[0].id !== undefined, true)
-})
+describe("deletion of a blog", () => {
+    test.only('succeeds with status code 204 if id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToDelete = blogsAtStart[0]
 
-test('new blog addition happens as expected', async () => {
-    const title = "Addition happens as expected"
-    const newBlog = {
-        title: title,
-        author: "me",
-        likes: 10
-    }
-    const response = await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
+        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
-    const blogsAfterAddition = await Blog.find({})
-    
-    assert.strictEqual(helper.initialBlogs.length + 1, blogsAfterAddition.length)
-    assert.strictEqual(response.body.title, title)
-})
+        const blogsAtEnd = await helper.blogsInDb()
 
-test('empty like field defaults to 0', async () => {
-    const title = "zero likes"
-    const newBlog = {
-        title: title,
-        author: "me"
-    }
-    const response = await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-    
-    assert.strictEqual(response.body.likes, 0)
-})
+        const ids = blogsAtEnd.map(n => n.id)
+        assert(!ids.includes(blogToDelete.id))
 
-test.only('title and url are required', async () => {
-    const newBlog = {
-        author: "me"
-    }
-    const response = await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
+        assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+    })
 })
 
 after(async () => {
