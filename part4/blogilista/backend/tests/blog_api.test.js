@@ -80,7 +80,7 @@ describe("addition of a new blog", () => {
 })
 
 describe("deletion of a blog", () => {
-    test.only('succeeds with status code 204 if id is valid', async () => {
+    test('succeeds with status code 204 if id is valid', async () => {
         const blogsAtStart = await helper.blogsInDb()
         const blogToDelete = blogsAtStart[0]
 
@@ -92,6 +92,26 @@ describe("deletion of a blog", () => {
         assert(!ids.includes(blogToDelete.id))
 
         assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+    })
+})
+
+describe("modification of a blog", () => {
+    test.only('succeeds with modification of a blog, if the id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToModify = blogsAtStart[0]
+
+        const addedLikes = 10
+        blogToModify.likes += addedLikes
+        const response = await api
+            .put(`/api/blogs/${blogToModify.id}`)
+            .send(blogToModify)
+            .expect(200)
+
+        const blogsAtEnd = await helper.blogsInDb()
+
+        const modifiedBlog = blogsAtEnd.find(blog => blog.id === blogToModify.id)
+
+        assert.strictEqual(modifiedBlog.likes, blogToModify.likes)
     })
 })
 
