@@ -17,7 +17,6 @@ describe('when there is initially one user at db', () => {
         const user = new User({ username: 'root', passwordHash })
 
         const response = await user.save()
-        console.log("new user:", response)
     })
 
     test('creation succeeds with a fresh username', async () => {
@@ -40,6 +39,67 @@ describe('when there is initially one user at db', () => {
 
         const usernames = usersAtEnd.map(u => u.username)
         assert(usernames.includes(newUser.username))
+
+    })
+
+    test('too short password results to an appropriate error', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'raceer',
+            password: '1'
+        }
+
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+        const usernames = usersAtEnd.map(u => u.username)
+        assert(!(usernames.includes(newUser.username)))
+
+        assert(response.body.error.includes('Password must be longer than 3 characters.'))
+    })
+
+    test('too short username results to an appropriate error', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'me',
+            password: '138925'
+        }
+
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        const usersAtEnd = await helper.usersInDb()
+        assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+
+        const usernames = usersAtEnd.map(u => u.username)
+        assert(!(usernames.includes(newUser.username)))
+
+        assert(response.body.error.includes('Username must be longer than 3 characters.'))
+    })
+
+    test('duplpicate username causes an error', async () => {
+        const usersAtStart = await helper.usersInDb()
+
+        const newUser = {
+            username: 'root',
+            password: '132895'
+        }
+
+        const response = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+
+        assert(response.body.error.includes('expected `username` to be unique'))
     })
 })
 
