@@ -1,8 +1,8 @@
-const { test, after, beforeEach, describe } = require('node:test')
+const { test, after, beforeeach, describe } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const helper = require('../utils/list_helper')
+const helper = require('../utils/test_helper')
 const app = require('../app')
 const Blog = require('../models/blog')
 
