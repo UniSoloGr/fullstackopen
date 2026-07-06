@@ -20,7 +20,8 @@ const errorHandler = (error, request, response, next) => {
 }
 
 const mongoUrl = process.env.MONGODB_URI
-mongoose.connect(mongoUrl, { family: 4 })
+const database = mongoose.connect(mongoUrl, { family: 4 })
+console.log(database)
 
 app.use(express.json())
 app.use('/api/blogs', blogsRouter)
