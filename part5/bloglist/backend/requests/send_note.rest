@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjZhNGI3MDdhMzM2MDhkMzU0YmMwMmFjOSIsImlhdCI6MTc4MzMyOTU0M30.mL9hs7BYuxOgB6BYIWpFvSVhwM-skDCkw5shFsRA3xE
+
+{
+    "title": "Jeffery",
+    "author": "root",
+    "url": "weoigweopgij",
+    "likes": 25
+}
