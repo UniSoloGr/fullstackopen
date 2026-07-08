@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -28,6 +31,14 @@ const App = () => {
     }
   }, [])
 
+  const timeoutTimer = 5000
+  const showNotification = (message, type) => {
+    setNotification({ message, type })
+    setTimeout(() => {
+      setNotification(null)
+    }, timeoutTimer)
+  }
+
   const handleLogin = async event => {
     event.preventDefault()
 
@@ -44,7 +55,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch {
-      console.log('wrong credentials', user)
+      showNotification('wrong username or password', 'error')
     }
   }
 
@@ -58,15 +69,19 @@ const App = () => {
   const addBlog = async (event) => {
     event.preventDefault()
 
-    console.log(title, author, url)
     const blogObject = {
       title: title,
       author: author,
       url: url
     }
-    const newBlog = await blogService.create(blogObject)
-    console.log(newBlog)
-    setBlogs(blogs.concat(newBlog))
+    try {
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      showNotification(`A new blog ${title} by ${author} added`, 'success')
+    } catch {
+      showNotification(`Missing one of the input fields!`, 'error')
+    }
+
   }
 
   const loginForm = () => (
@@ -125,6 +140,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
+      <Notification notification={notification} />
       {!user && loginForm()}
       {user && (
         <div>
