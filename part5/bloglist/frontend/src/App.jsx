@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import {Blog, BlogList, BlogForm} from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -14,10 +14,6 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   const blogFormRef = useRef()
-
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -69,22 +65,15 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = async (event) => {
+  const addBlog = async (blogObject) => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()
+    console.log(blogObject)
 
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
     try {
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
-      showNotification(`A new blog ${title} by ${author} added`, 'success')
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      // showNotification(`A new blog ${title} by ${author} added`, 'success')
     } catch {
       showNotification(`Missing one of the input fields!`, 'error')
     }
@@ -117,32 +106,6 @@ const App = () => {
     </form>
   )
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        title:
-        <input value={title} onChange={(event) => setTitle(event.target.value)}/>
-      </div>
-      <div>
-        author:
-        <input value={author} onChange={(event) => setAuthor(event.target.value)}/>
-      </div>
-      <div>
-        url:
-        <input value={url} onChange={(event) => setUrl(event.target.value)}/>
-      </div>
-      <button type="submit">create</button>
-    </form>
-  )
-
-  const blogList = () => (
-    <div>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
-    </div>
-  )
-
   return (
     <div>
       <h2>blogs</h2>
@@ -156,9 +119,9 @@ const App = () => {
           </p>
           <h2>create new</h2>
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
-            {blogForm()}
+            <BlogForm createBlog={addBlog} />
           </Togglable>
-          {blogList()}
+          <BlogList blogs={blogs} />
         </div>
       )}
     </div>
