@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
@@ -11,6 +12,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+
+  const blogFormRef = useRef()
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -68,6 +71,7 @@ const App = () => {
 
   const addBlog = async (event) => {
     event.preventDefault()
+    blogFormRef.current.toggleVisibility()
 
     const blogObject = {
       title: title,
@@ -78,6 +82,9 @@ const App = () => {
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
       showNotification(`A new blog ${title} by ${author} added`, 'success')
+      setTitle('')
+      setAuthor('')
+      setUrl('')
     } catch {
       showNotification(`Missing one of the input fields!`, 'error')
     }
@@ -148,7 +155,9 @@ const App = () => {
             <button onClick={handleLogout}>logout</button>
           </p>
           <h2>create new</h2>
-          {blogForm()}
+          <Togglable buttonLabel='new blog' ref={blogFormRef}>
+            {blogForm()}
+          </Togglable>
           {blogList()}
         </div>
       )}
