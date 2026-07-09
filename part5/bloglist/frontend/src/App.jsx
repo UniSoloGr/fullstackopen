@@ -73,7 +73,7 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
-      // showNotification(`A new blog ${title} by ${author} added`, 'success')
+      showNotification(`A new blog ${blogObject.title} by ${blogObject.author} added`, 'success')
     } catch {
       showNotification(`Missing one of the input fields!`, 'error')
     }
