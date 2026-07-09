@@ -77,7 +77,26 @@ const App = () => {
     } catch {
       showNotification(`Missing one of the input fields!`, 'error')
     }
+  }
 
+  const addLike = async (blogObject) => {
+    event.preventDefault()
+
+    const modBlogObject = {
+      ...blogObject,
+      likes: blogObject.likes + 1,
+    }
+
+    try {
+      const updatedBlogObject = await blogService.update(modBlogObject)
+      setBlogs(
+        blogs.map(blog => 
+          blog.id === modBlogObject.id ? modBlogObject: blog
+        )
+      )
+    } catch (error) {
+      showNotification(error.message, 'error')
+    }
   }
 
   const loginForm = () => (
@@ -121,7 +140,7 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          <BlogList blogs={blogs} />
+          <BlogList blogs={blogs} addLike={addLike} />
         </div>
       )}
     </div>
