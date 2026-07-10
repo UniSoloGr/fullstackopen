@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import {Blog, BlogList, BlogForm} from './components/Blog'
+import { Blog, BlogList, BlogForm } from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -18,7 +18,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(sortBlogs(blogs))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -79,12 +79,12 @@ const App = () => {
       setBlogs(blogs.concat(newBlog))
       showNotification(`A new blog ${blogObject.title} by ${blogObject.author} added`, 'success')
     } catch {
-      showNotification(`Missing one of the input fields!`, 'error')
+      showNotification('Missing one of the input fields!', 'error')
     }
   }
 
   const removeBlog = async (blogObject) => {
-    console.log("ok")
+    console.log('ok')
     event.preventDefault()
     const blogId = blogObject.id
 
@@ -95,14 +95,14 @@ const App = () => {
     }
 
     try {
-      const response = await blogService.remove(blogId)
+      await blogService.remove(blogId)
       setBlogs(
         blogs.filter(blog =>
           blog.id !== blogId
         )
       )
     } catch (error) {
-      console.log("error", error)
+      console.log('error', error)
     }
   }
 
@@ -115,12 +115,12 @@ const App = () => {
     }
 
     try {
-      const updatedBlogObject = await blogService.update(modBlogObject)
+      await blogService.update(modBlogObject)
       setBlogs(
-        blogs.map(blog => 
+        blogs.map(blog =>
           blog.id === modBlogObject.id ? modBlogObject: blog
         )
-        .sort((a, b) => b.likes - a.likes)
+          .sort((a, b) => b.likes - a.likes)
       )
     } catch (error) {
       showNotification(error.message, 'error')

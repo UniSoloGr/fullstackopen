@@ -6,10 +6,10 @@ const Blog = ({ blog, addLike, removeBlog }) => {
   const toggleFullView = () => {
     setFullView(!fullView)
   }
-  const showFullview = { display: fullView ? '' : 'none'}
+  const showFullview = { display: fullView ? '' : 'none' }
   const buttonText = fullView
-    ? "hide"
-    : "view"
+    ? 'hide'
+    : 'view'
 
   const blogStyle = {
     paddingTop: 10,
@@ -32,13 +32,13 @@ const Blog = ({ blog, addLike, removeBlog }) => {
           <button onClick={() => addLike(blog)}>like</button>
         </div>
         <div>
-          {blog.user?.username || "unknown"}
+          {blog.user?.username || 'unknown'}
         </div>
         <div>
           <button onClick={() => removeBlog(blog)}>remove</button>
         </div>
       </div>
-    </div>  
+    </div>
   )
 }
 
@@ -89,4 +89,4 @@ const BlogForm = ({ createBlog }) => {
   )
 }
 
-export {Blog, BlogForm, BlogList}
+export { Blog, BlogForm, BlogList }
