@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, removeBlog }) => {
   const [fullView, setFullView] = useState(false)
 
   const toggleFullView = () => {
@@ -34,16 +34,19 @@ const Blog = ({ blog, addLike }) => {
         <div>
           {blog.user?.username || "unknown"}
         </div>
+        <div>
+          <button onClick={() => removeBlog(blog)}>remove</button>
+        </div>
       </div>
     </div>  
   )
 }
 
-const BlogList = ({ blogs, addLike }) => {
+const BlogList = ({ blogs, addLike, removeBlog }) => {
   return (
     <div>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} addLike={addLike} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog}/>
       )}
     </div>
   )

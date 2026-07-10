@@ -83,6 +83,29 @@ const App = () => {
     }
   }
 
+  const removeBlog = async (blogObject) => {
+    console.log("ok")
+    event.preventDefault()
+    const blogId = blogObject.id
+
+    let verification = window.confirm(`Remove ${blogObject.title} by ${blogObject.author}`)
+
+    if (!verification) {
+      return
+    }
+
+    try {
+      const response = await blogService.remove(blogId)
+      setBlogs(
+        blogs.filter(blog =>
+          blog.id !== blogId
+        )
+      )
+    } catch (error) {
+      console.log("error", error)
+    }
+  }
+
   const addLike = async (blogObject) => {
     event.preventDefault()
 
@@ -145,7 +168,7 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          <BlogList blogs={blogs} addLike={addLike} />
+          <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog}/>
         </div>
       )}
     </div>
