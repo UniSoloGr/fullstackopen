@@ -17,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(sortBlogs(blogs))
     )  
   }, [])
 
@@ -36,6 +36,10 @@ const App = () => {
     setTimeout(() => {
       setNotification(null)
     }, timeoutTimer)
+  }
+
+  const sortBlogs = (blogs) => {
+    return [...blogs].sort((a, b) => b.likes - a.likes)
   }
 
   const handleLogin = async event => {
@@ -93,6 +97,7 @@ const App = () => {
         blogs.map(blog => 
           blog.id === modBlogObject.id ? modBlogObject: blog
         )
+        .sort((a, b) => b.likes - a.likes)
       )
     } catch (error) {
       showNotification(error.message, 'error')
