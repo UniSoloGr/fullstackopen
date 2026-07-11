@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Blog } from './Blog'
+import { Blog, BlogForm } from './Blog'
 
 test('renders title', () => {
     const title = "This is a test title"
@@ -79,4 +79,33 @@ test ('Like -doubleclick works as expected', async () => {
   await user.click(likeButton)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
+test ('BlogForm calls createBlog and updates parent state', async () => {
+  const user = userEvent.setup()
+  const createBlog = vi.fn()
+
+  render(
+    <BlogForm
+      createBlog={createBlog}
+    />
+  )
+
+  const input = screen.getAllByRole('textbox')
+  const sendButton = screen.getByText('create')
+
+  const title = "This is test title"
+  const author = "unisologr"
+  const url = "leetcode.com"
+
+  await user.type(input[0], title)
+  await user.type(input[1], author)
+  await user.type(input[2], url)
+  await user.click(sendButton)
+
+  console.log(createBlog.mock.calls)
+  expect(createBlog.mock.calls).toHaveLength(1)
+  expect(createBlog.mock.calls[0][0].title).toBe(title)
+  expect(createBlog.mock.calls[0][0].author).toBe(author)
+  expect(createBlog.mock.calls[0][0].url).toBe(url)
 })
