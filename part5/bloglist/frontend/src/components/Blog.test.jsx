@@ -48,3 +48,35 @@ test('clicking a button opens full view', async () => {
   expect(screen.getByText('likes', {exact: false})).toBeDefined()
   expect(screen.getByText('unknown', {exact: false})).toBeDefined()
 })
+
+test ('Like -doubleclick works as expected', async () => {
+  const title = "This is test title"
+  const author = "unisologr"
+  const url = "leetcode.com"
+
+  const blog = {
+    title,
+    author,
+    url
+  }
+
+  const mockHandler = vi.fn()
+
+  render(
+    <Blog
+      blog={blog}
+      addLike={mockHandler}
+    />
+  )
+
+  const user = userEvent.setup()
+  const button = screen.getByText('view')
+  await user.click(button)
+
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
