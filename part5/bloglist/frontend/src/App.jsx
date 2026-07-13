@@ -72,19 +72,19 @@ const App = () => {
   const addBlog = async (blogObject) => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()
-    console.log(blogObject)
 
     try {
       const newBlog = await blogService.create(blogObject)
+      console.log("ok")
       setBlogs(blogs.concat(newBlog))
       showNotification(`A new blog ${blogObject.title} by ${blogObject.author} added`, 'success')
-    } catch {
+    } catch (error) {
       showNotification('Missing one of the input fields!', 'error')
+      console.log(error)
     }
   }
 
   const removeBlog = async (blogObject) => {
-    console.log('ok')
     event.preventDefault()
     const blogId = blogObject.id
 

@@ -38,4 +38,29 @@ describe('Blog app', () => {
         await expect(page.getByText('unisologr logged in')).not.toBeVisible()
       })
     })
+  
+    describe('When logged in', () => {
+      beforeEach(async ({ page }) => {
+        await page.getByLabel('username').fill('unisologr')
+        await page.getByLabel('password').fill('sekret')
+
+        await page.getByText('login').click()
+      }) 
+
+      test('a new blog can be created', async ({ page }) => {
+        await page.getByRole('button', { name: 'new blog' }).click()
+
+        const title = "Lost and Crowned"
+        const author = "Larry the Skeleton"
+        const url = "blogs.com"
+
+        await page.getByLabel("title").fill(title)
+        await page.getByLabel("author").fill(author)
+        await page.getByLabel("url").fill(url)
+
+        await page.getByRole('button', { name: 'create' }).click()
+
+        await expect(page.getByText(`${title} ${author}`)).toBeVisible()
+      })
+    })
 })
