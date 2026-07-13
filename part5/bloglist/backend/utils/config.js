@@ -6,5 +6,7 @@ const MONGODB_URI = process.env.NODE_ENV === 'test'
 
 const PORT = process.env.PORT
 const SECRET = process.env.SECRET
+console.log("node env", process.env.NODE_ENV)
+console.log("mongo db uri", MONGODB_URI)
 
 module.exports = { MONGODB_URI, PORT }
