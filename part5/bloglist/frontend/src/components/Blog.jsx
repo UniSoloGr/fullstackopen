@@ -20,7 +20,7 @@ const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} data-testid='blog'>
       {blog.title} {blog.author}
       <button onClick={toggleFullView}>{buttonText}</button>
       <div style={showFullview}>

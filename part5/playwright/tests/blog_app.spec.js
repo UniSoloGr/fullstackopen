@@ -63,6 +63,94 @@ describe('Blog app', () => {
         await expect(page.getByText(`${title} ${author}`)).toBeVisible()
       })
 
+      test('blogs are sorted by likes', async ({ page }) => {
+        const createNewBlog = async (page, title, author, url) => {
+          await page.getByRole('button', { name: 'new blog' }).click()
+
+          await page.getByLabel("title").fill(title)
+          await page.getByLabel("author").fill(author)
+          await page.getByLabel("url").fill(url)
+
+          await page.getByRole('button', { name: 'create' }).click()
+          const blogString = `${title} ${author}`
+          await page.getByText(blogString).waitFor()
+          return blogString
+        }
+
+        const firstTitle = "Lost and Crowned"
+        const secondTitle = "Found and Pounded"
+        const author = "Larry the Skeleton"
+        const url = "blogs.com"
+
+        const firstBlogString = await createNewBlog(
+          page,
+          firstTitle,
+          author,
+          url
+        )
+
+        const secondBlogString = await createNewBlog(
+          page,
+          secondTitle,
+          author,
+          url
+        )
+
+        const firstBlog = await page.getByTestId('blog').filter({
+          has: page.getByText(firstBlogString)
+        })
+        const secondBlog = await page.getByTestId('blog').filter({
+          has: page.getByText(secondBlogString)
+        })
+
+        await firstBlog.getByRole('button', { name: 'view' }).click()
+        await secondBlog.getByRole('button', { name: 'view' }).click()
+
+        const firstBlogLike = await firstBlog.getByRole('button', { name: 'like' })
+        const secondBlogLike = await secondBlog.getByRole('button', { name: 'like' })
+
+        await firstBlogLike.click()
+
+        await secondBlogLike.click()
+        await secondBlogLike.click()
+
+        const hideButtons = await page.getByRole('button', { name: 'hide' }).all()
+
+        await expect(hideButtons[0].locator('..').getByText(secondBlogString)).toBeVisible()
+        await expect(hideButtons[1].locator('..').getByText(firstBlogString)).toBeVisible()
+      })
+
+      describe('and a blog exists', () => {
+        beforeEach(async ({page}) => {
+          await page.getByRole('button', { name: 'new blog' }).click()
+
+          const title = "Lost and Crowned"
+          const author = "Larry the Skeleton"
+          const url = "blogs.com"
+
+          await page.getByLabel("title").fill(title)
+          await page.getByLabel("author").fill(author)
+          await page.getByLabel("url").fill(url)
+
+        const secondBlog = await page.getByText(secondBlogString)
+
+        await firstBlog.getByRole('button', { name: 'view' }).click()
+        await secondBlog.getByRole('button', { name: 'view' }).click()
+
+        const firstBlogLike = await firstBlog.getByRole('button', { name: 'like' })
+        const secondBlogLike = await secondBlog.getByRole('button', { name: 'like' })
+
+        await firstBlogLike.click()
+
+        await secondBlogLike.click()
+        await secondBlogLike.click()
+
+        const hideButtons = await page.getByRole('button', { name: 'hide' }).all()
+
+        await expect(hideButtons[0].locator('..').getByText(secondBlogString)).toBeVisible()
+        await expect(hideButtons[1].locator('..').getByText(firstBlogString)).toBeVisible()
+      })
+
       describe('and a blog exists', () => {
         beforeEach(async ({page}) => {
           await page.getByRole('button', { name: 'new blog' }).click()
@@ -118,4 +206,5 @@ describe('Blog app', () => {
         })
       })
     })
+  })
 })
