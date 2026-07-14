@@ -62,5 +62,29 @@ describe('Blog app', () => {
 
         await expect(page.getByText(`${title} ${author}`)).toBeVisible()
       })
+
+      describe('and a blog exists', () => {
+        beforeEach(async ({page}) => {
+          await page.getByRole('button', { name: 'new blog' }).click()
+
+          const title = "Lost and Crowned"
+          const author = "Larry the Skeleton"
+          const url = "blogs.com"
+
+          await page.getByLabel("title").fill(title)
+          await page.getByLabel("author").fill(author)
+          await page.getByLabel("url").fill(url)
+
+          await page.getByRole('button', { name: 'create' }).click()
+        })
+
+        test('blog can be liked', async ({page}) => {
+          await page.getByRole('button', { name: "view" }).click()
+
+          await page.getByRole('button', { name: "like" }).click()
+
+          await expect(page.getByText('likes 1')).toBeVisible()
+        })
+      })
     })
 })
