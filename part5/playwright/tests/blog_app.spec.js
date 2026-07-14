@@ -95,7 +95,26 @@ describe('Blog app', () => {
 
           const title = "Lost and Crowned"
           const author = "Larry the Skeleton"
-          await expect(page.getByText(`${title} ${author}`)).not.toBeVisible()
+          await expect(page.getByText(`${title} ${author}`)).not.toBeAttached()
+        })
+
+        test('remove button only visible for creator', async ({page, request }) => {
+          await page.getByRole('button', { name: "logout" }).click()
+
+          await request.post('/api/users', {
+            data: {
+                name: 'two',
+                username: 'groover',
+                password: 'sekret'
+            }
+          })
+
+          await page.getByLabel('username').fill('groover')
+          await page.getByLabel('password').fill('sekret')
+          await page.getByRole('button', { name: "login" }).click()
+
+          await page.getByRole('button', { name: "view" }).click()
+          await expect(page.getByRole('button', { name: "remove" })).not.toBeAttached()
         })
       })
     })

@@ -153,6 +153,8 @@ const App = () => {
     </form>
   )
 
+  console.log("user", user)
+
   return (
     <div>
       <h2>blogs</h2>
@@ -168,7 +170,7 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog}/>
+          <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
         </div>
       )}
     </div>
