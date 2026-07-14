@@ -85,6 +85,18 @@ describe('Blog app', () => {
 
           await expect(page.getByText('likes 1')).toBeVisible()
         })
+
+        test('blog can be deleted', async ({page}) => {
+          await page.getByRole('button', { name: "view" }).click()
+
+          page.once('dialog', dialog => dialog.accept())
+
+          await page.getByRole('button', { name: "remove" }).click()
+
+          const title = "Lost and Crowned"
+          const author = "Larry the Skeleton"
+          await expect(page.getByText(`${title} ${author}`)).not.toBeVisible()
+        })
       })
     })
 })
