@@ -1,4 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link,
+  useNavigate
+} from 'react-router-dom'
 import { Blog, BlogList, BlogForm } from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
@@ -14,6 +19,8 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   const blogFormRef = useRef()
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -57,6 +64,8 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+
+      navigate('/')
     } catch {
       showNotification('wrong username or password', 'error')
     }
@@ -153,28 +162,59 @@ const App = () => {
     </form>
   )
 
-  console.log("user", user)
+  // return (
+  //   <div>
+  //     <h2>blogs</h2>
 
+  //     <Notification notification={notification} />
+  //     {!user && loginForm()}
+  //     {user && (
+  //       <div>
+  //         <p>{user.username} logged in
+  //           <button onClick={handleLogout}>logout</button>
+  //         </p>
+  //         <h2>create new</h2>
+  //         <Togglable buttonLabel='new blog' ref={blogFormRef}>
+  //           <BlogForm createBlog={addBlog} />
+  //         </Togglable>
+  //         <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
+  //       </div>
+  //     )}
+  //   </div>
+  // )
+// }
+  const padding = {
+    padding: 5
+  }
+
+  const LoginRoute = () => (
+    <Route path='/login' element={
+      <div>{loginForm()}</div>
+    } />
+  )
+  
   return (
     <div>
-      <h2>blogs</h2>
-
-      <Notification notification={notification} />
-      {!user && loginForm()}
-      {user && (
-        <div>
-          <p>{user.username} logged in
-            <button onClick={handleLogout}>logout</button>
-          </p>
-          <h2>create new</h2>
-          <Togglable buttonLabel='new blog' ref={blogFormRef}>
-            <BlogForm createBlog={addBlog} />
-          </Togglable>
+      <div>
+        <Link style={padding} to="/">blogs</Link>
+        {!user && (
+          <Link style={padding} to="/login">login</Link>
+        )}
+        {user && (
+          <button onClick={handleLogout}>logout</button>
+        )}
+      </div>
+      <Routes>
+        <Route path='/' element={
           <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
-        </div>
-      )}
+        } />
+        {!user && <Route path='/login' element={
+          <div>{loginForm()}</div>
+        } />}
+      </Routes>
     </div>
   )
+
 }
 
 export default App
