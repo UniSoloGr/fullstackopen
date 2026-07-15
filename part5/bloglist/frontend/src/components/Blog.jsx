@@ -1,7 +1,17 @@
 import { useState } from 'react'
+import {
+  useParams,
+  useNavigate,
+  Link
+} from 'react-router-dom'
 
 const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
+  const id = useParams().id
   const [fullView, setFullView] = useState(false)
+
+  if (!blog) {
+    return null
+  }
 
   const toggleFullView = () => {
     setFullView(!fullView)
@@ -21,11 +31,9 @@ const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
 
   return (
     <div style={blogStyle} data-testid='blog'>
-      {blog.title} {blog.author}
-      <button onClick={toggleFullView}>{buttonText}</button>
-      <div style={showFullview}>
+      <h1>{blog.author}: {blog.title}</h1>
         <div>
-          {blog.url}
+          <a href={blog.url} >{blog.url}</a>
         </div>
         <div>
           likes {blog.likes}
@@ -39,7 +47,6 @@ const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
             <button onClick={() => removeBlog(blog)}>remove</button>
           </div>
         )}
-      </div>
     </div>
   )
 }
@@ -47,9 +54,14 @@ const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
 const BlogList = ({ blogs, addLike, removeBlog, loggedUser }) => {
   return (
     <div>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} loggedUser={loggedUser}/>
-      )}
+      <h1>blogs</h1>
+      <ul>
+        {blogs.map(blog => (
+          <li key={blog?.id}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

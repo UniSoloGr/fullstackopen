@@ -28,6 +28,14 @@ const update = async modObject => {
   return response.data
 }
 
+const like = async modObject => {
+  const config = {
+    headers: { Authorization: token }
+  }
+  const response = await axios.put(`${baseUrl}/${modObject.id}/like`, modObject, config)
+  return response.data
+}
+
 const remove = async blogId => {
   const config = {
     headers: { Authorization: token }
@@ -40,6 +48,7 @@ export default {
   getAll,
   create,
   update,
+  like,
   remove,
   setToken
 }

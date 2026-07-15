@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import {
   BrowserRouter as Router,
   Routes, Route, Link,
-  useNavigate
+  useNavigate,
+  useMatch
 } from 'react-router-dom'
 import { Blog, BlogList, BlogForm } from './components/Blog'
 import Notification from './components/Notification'
@@ -118,13 +119,18 @@ const App = () => {
   const addLike = async (blogObject) => {
     event.preventDefault()
 
+    if (!user) {
+      showNotification('Only logged users can like blogs', 'error')
+      return
+    }
+
     const modBlogObject = {
       ...blogObject,
       likes: blogObject.likes + 1,
     }
 
     try {
-      await blogService.update(modBlogObject)
+      await blogService.like(modBlogObject)
       setBlogs(
         blogs.map(blog =>
           blog.id === modBlogObject.id ? modBlogObject: blog
@@ -162,27 +168,6 @@ const App = () => {
     </form>
   )
 
-  // return (
-  //   <div>
-  //     <h2>blogs</h2>
-
-  //     <Notification notification={notification} />
-  //     {!user && loginForm()}
-  //     {user && (
-  //       <div>
-  //         <p>{user.username} logged in
-  //           <button onClick={handleLogout}>logout</button>
-  //         </p>
-  //         <h2>create new</h2>
-  //         <Togglable buttonLabel='new blog' ref={blogFormRef}>
-  //           <BlogForm createBlog={addBlog} />
-  //         </Togglable>
-  //         <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
-  //       </div>
-  //     )}
-  //   </div>
-  // )
-// }
   const padding = {
     padding: 5
   }
@@ -192,6 +177,11 @@ const App = () => {
       <div>{loginForm()}</div>
     } />
   )
+
+  const match = useMatch('/blogs/:id')
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
   
   return (
     <div>
@@ -205,6 +195,9 @@ const App = () => {
         )}
       </div>
       <Routes>
+        <Route path='/blogs/:id' element={
+          <Blog key={blog?.id} blog={blog} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
+        } />
         <Route path='/' element={
           <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
         } />
