@@ -1,14 +1,20 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Blog, BlogForm } from './Blog'
+import { MemoryRouter } from 'react-router-dom'
 
-test('renders title', () => {
+test("unsigned users can't see buttons", () => {
     const title = "This is a test title"
     const author = "unisologr"
     
     const blog = {
-        title,
-        author
+      title,
+      author,
+      likes: 0,
+      user: {
+        id: '123',
+        username: 'root'
+      }
     }
 
     render(
@@ -17,11 +23,16 @@ test('renders title', () => {
       />
     )
 
-    const element = screen.getByText(title, { exact: false })
-    expect(element).toBeDefined()
+    const headerElement = screen.getByText(`${author}: ${title}`, { exact: false })
+    const likes = screen.getByText("likes", { exact: false })
+    expect(headerElement).toBeDefined()
+    expect(likes).toBeDefined()
+
+    expect(screen.queryByRole('button', { name: 'like' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'remove' })).not.toBeInTheDocument()
 })
 
-test('clicking a button opens full view', async () => {
+test('another logged user sees only like button', async () => {
   const title = "This is test title"
   const author = "unisologr"
   const url = "leetcode.com"
@@ -29,35 +40,50 @@ test('clicking a button opens full view', async () => {
   const blog = {
     title,
     author,
-    url
+    url,
+    likes: 0,
+    user: {
+      id: '123',
+      username: 'root'
+    }
   }
+
+  const mockHandler = vi.fn()
+  const user = userEvent.setup()
 
   render(
     <Blog
       blog={blog}
+      addLike={mockHandler}
+      loggedUser={user}
     />
   )
 
-  const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
 
-  expect(screen.getByText(title, {exact: false})).toBeDefined()
-  expect(screen.getByText(author, {exact: false})).toBeDefined()
-  expect(screen.getByText(url, {exact: false})).toBeDefined()
-  expect(screen.getByText('likes', {exact: false})).toBeDefined()
-  expect(screen.getByText('unknown', {exact: false})).toBeDefined()
+  expect(mockHandler.mock.calls).toHaveLength(2)
+
+  expect(screen.queryByRole('button', { name: 'remove' })).not.toBeInTheDocument()
 })
 
-test ('Like -doubleclick works as expected', async () => {
+test('blog creator sees all buttons', async () => {
   const title = "This is test title"
   const author = "unisologr"
   const url = "leetcode.com"
 
+  const rootUser = {
+    id: '123',
+    username: 'root'
+  }
+
   const blog = {
     title,
     author,
-    url
+    url,
+    likes: 0,
+    user: rootUser 
   }
 
   const mockHandler = vi.fn()
@@ -66,19 +92,19 @@ test ('Like -doubleclick works as expected', async () => {
     <Blog
       blog={blog}
       addLike={mockHandler}
+      loggedUser={rootUser}
     />
   )
 
   const user = userEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
-
 
   const likeButton = screen.getByText('like')
   await user.click(likeButton)
   await user.click(likeButton)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+
+  expect(screen.queryByRole('button', { name: 'remove' })).toBeInTheDocument()
 })
 
 test ('BlogForm calls createBlog and updates parent state', async () => {
@@ -86,9 +112,11 @@ test ('BlogForm calls createBlog and updates parent state', async () => {
   const createBlog = vi.fn()
 
   render(
-    <BlogForm
-      createBlog={createBlog}
-    />
+    <MemoryRouter>
+      <BlogForm
+        createBlog={createBlog}
+      />
+    </MemoryRouter>
   )
 
   const input = screen.getAllByRole('textbox')
@@ -103,7 +131,6 @@ test ('BlogForm calls createBlog and updates parent state', async () => {
   await user.type(input[2], url)
   await user.click(sendButton)
 
-  console.log(createBlog.mock.calls)
   expect(createBlog.mock.calls).toHaveLength(1)
   expect(createBlog.mock.calls[0][0].title).toBe(title)
   expect(createBlog.mock.calls[0][0].author).toBe(author)
