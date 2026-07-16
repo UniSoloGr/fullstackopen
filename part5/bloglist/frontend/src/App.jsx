@@ -81,7 +81,7 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     event.preventDefault()
-    blogFormRef.current.toggleVisibility()
+    // blogFormRef.current.toggleVisibility()
 
     try {
       const newBlog = await blogService.create(blogObject)
@@ -111,6 +111,7 @@ const App = () => {
           blog.id !== blogId
         )
       )
+      navigate('/')
     } catch (error) {
       console.log('error', error)
     }
@@ -191,12 +192,18 @@ const App = () => {
           <Link style={padding} to="/login">login</Link>
         )}
         {user && (
-          <button onClick={handleLogout}>logout</button>
+          <>
+            <Link style={padding} to='/create'>new blog</Link>
+            <button onClick={handleLogout}>logout</button>
+          </>
         )}
       </div>
       <Routes>
         <Route path='/blogs/:id' element={
           <Blog key={blog?.id} blog={blog} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
+        } />
+        <Route path='/create' element={
+          <BlogForm createBlog={addBlog} />
         } />
         <Route path='/' element={
           <BlogList blogs={blogs} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>

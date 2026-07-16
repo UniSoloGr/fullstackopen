@@ -71,6 +71,8 @@ const BlogForm = ({ createBlog }) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const navigate = useNavigate()
+
   const addBlog = (event) => {
     event.preventDefault()
     createBlog({
@@ -82,10 +84,13 @@ const BlogForm = ({ createBlog }) => {
     setTitle('')
     setAuthor('')
     setUrl('')
+   
+    navigate('/')
   }
 
   return (
     <form onSubmit={addBlog}>
+      <h1>create new</h1>
       <div>
         <label>
           title:
