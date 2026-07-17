@@ -4,6 +4,7 @@ import {
   useNavigate,
   Link
 } from 'react-router-dom'
+import { TextField, Button } from '@mui/material'
 
 const Blog = ({ blog, addLike, removeBlog, loggedUser }) => {
   const id = useParams().id
@@ -88,28 +89,30 @@ const BlogForm = ({ createBlog }) => {
     navigate('/')
   }
 
+  const style = { marginTop: 10 }
+  const inputStyle = {
+  width: '100%',
+  maxWidth: '450px',
+  height: '35px',          
+  padding: '0 0px 10px 0px',       
+  marginBottom: '16px',
+  fontSize: '14px',
+  lineHeight: '36px',      
+};
+
   return (
     <form onSubmit={addBlog}>
       <h1>create new</h1>
       <div>
-        <label>
-          title:
-          <input value={title} onChange={(event) => setTitle(event.target.value)}/>
-        </label>
+        <TextField label="title" value={title} style={inputStyle} onChange={(event) => setTitle(event.target.value)}/>
       </div>
       <div>
-        <label>
-          author:
-          <input value={author} onChange={(event) => setAuthor(event.target.value)}/>
-        </label>
+        <TextField label="author" value={author} style={inputStyle} onChange={(event) => setAuthor(event.target.value)}/>
       </div>
       <div>
-        <label>
-          url:
-          <input value={url} onChange={(event) => setUrl(event.target.value)}/>
-        </label>
+        <TextField label="url" value={url} style={inputStyle} onChange={(event) => setUrl(event.target.value)}/>
       </div>
-      <button type="submit">create</button>
+      <Button variant='contained' type="submit" style={style}>create</Button>
     </form>
   )
 }

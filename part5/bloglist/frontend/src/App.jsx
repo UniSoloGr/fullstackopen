@@ -11,6 +11,7 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './index.css'
+import { Container, TextField, Button } from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -145,27 +146,26 @@ const App = () => {
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
+      <h1>Login to application</h1>
       <div>
-        <label>
-          username
-          <input
+          <TextField
+          label='username'
             type="text"
+            variant='standard'
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
-        </label>
       </div>
       <div>
-        <label>
-          password
-          <input
+          <TextField
+          label='password'
             type="text"
+            variant='standard'
             value={password}
             onChange={({ target }) => setPassword(target.value)}
           />
-        </label>
       </div>
-      <button type="submit">login</button>
+    <Button style={{ marginTop: '10px' }} type="submit" variant='contained' >login</Button>
     </form>
   )
 
@@ -185,7 +185,7 @@ const App = () => {
     : null
   
   return (
-    <div>
+    <Container>
       <div>
         <Link style={padding} to="/">blogs</Link>
         {!user && (
@@ -213,7 +213,7 @@ const App = () => {
           <div>{loginForm()}</div>
         } />}
       </Routes>
-    </div>
+    </Container>
   )
 }
 
