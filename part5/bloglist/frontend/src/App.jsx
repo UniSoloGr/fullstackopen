@@ -67,7 +67,8 @@ const App = () => {
       setPassword('')
 
       navigate('/')
-    } catch {
+    } catch (error) {
+      console.log(error);
       showNotification('wrong username or password', 'error')
     }
   }
@@ -81,7 +82,6 @@ const App = () => {
 
   const addBlog = async (blogObject) => {
     event.preventDefault()
-    // blogFormRef.current.toggleVisibility()
 
     try {
       const newBlog = await blogService.create(blogObject)
@@ -198,6 +198,7 @@ const App = () => {
           </>
         )}
       </div>
+      <Notification notification={notification} />
       <Routes>
         <Route path='/blogs/:id' element={
           <Blog key={blog?.id} blog={blog} addLike={addLike} removeBlog={removeBlog} loggedUser={user}/>
@@ -214,7 +215,6 @@ const App = () => {
       </Routes>
     </div>
   )
-
 }
 
 export default App
