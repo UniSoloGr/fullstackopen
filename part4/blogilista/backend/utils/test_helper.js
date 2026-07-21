@@ -80,6 +80,18 @@ const mostBlogs = (blogs) => {
   }
 }
 
+const mostLikes = (blogs) => {
+  const creatorLikes = _.groupBy(blogs, "author")
+  const totalLikesByAuthor = _.mapValues(creatorLikes, (blogs) => {
+    return blogs.reduce((sum, blog) => sum + blog.likes, 0)
+  })
+  const [author, likes] = _.maxBy(_.toPairs(totalLikesByAuthor), pair => pair[1])
+  return {
+    author,
+    likes
+  }
+}
+
 const blogsInDb = async () => {
     const blogs = await Blog.find({})
     return blogs.map(blog => blog.toJSON())
@@ -95,6 +107,7 @@ module.exports = {
   totalLikes, 
   favoriteBlog,
   mostBlogs,
+  mostLikes,
   blogsInDb,
   usersInDb,
   initialBlogs
