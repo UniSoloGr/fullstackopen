@@ -1,6 +1,6 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
-const listHelper = require('../utils/list_helper')
+const listHelper = require('../utils/test_helper')
 
 test('dummy returns one', () => {
     const blogs = []
@@ -67,9 +67,7 @@ describe('total courses', () => {
 
   test('totalLikes returns the sum of likes from all blogs', () => {
     const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, blogs.reduce((accumulator, item) => {
-        return accumulator + item.likes
-    }, 0))
+    assert.strictEqual(result, 36)
   })
 })
 
@@ -126,9 +124,14 @@ describe('total courses', () => {
 
   test('favoriteBlog returns the most liked blog', () => {
     const result = listHelper.favoriteBlog(blogs)
-    assert.deepStrictEqual(result.likes, blogs.reduce((favorite, blog) => {
-        return blog.likes > favorite.likes ? blog : favorite
-    }).likes )
+    assert.deepStrictEqual(result.likes, 12)
   })
 
+  test('mostBlogs returns the author with most blogs', () => {
+    const result = listHelper.mostBlogs(blogs)
+    assert.deepStrictEqual(result, {
+      author: 'Robert C. Martin',
+      blogs: 3
+    })
+  })
 })

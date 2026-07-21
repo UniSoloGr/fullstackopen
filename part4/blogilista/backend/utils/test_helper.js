@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const _ = require('lodash')
 
 const initialBlogs = [
   {
@@ -70,6 +71,15 @@ const favoriteBlog = (blogs) => {
     return favoriteBlog
 }
 
+const mostBlogs = (blogs) => {
+  const creatorCounts = _.countBy(blogs, "author")
+  const [author, blogCount] = _.maxBy(_.toPairs(creatorCounts), pair => pair[1])
+  return {
+    "author": author,
+    "blogs": blogCount
+  }
+}
+
 const blogsInDb = async () => {
     const blogs = await Blog.find({})
     return blogs.map(blog => blog.toJSON())
@@ -84,6 +94,7 @@ module.exports = {
   dummy,
   totalLikes, 
   favoriteBlog,
+  mostBlogs,
   blogsInDb,
   usersInDb,
   initialBlogs
