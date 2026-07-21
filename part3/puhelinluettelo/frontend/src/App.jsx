@@ -98,7 +98,6 @@ const App = () => {
 
     const oldPerson = persons.find(oldPerson => oldPerson.name === person.name)
 
-
     if (oldPerson) {
       const message = `${person.name} is already added to phonebook, replace the old number with a new one?`
       const shouldUpdate =
