@@ -1,10 +1,11 @@
-const { test, after, beforeeach, describe } = require('node:test')
+const { test, after, beforeeach, describe, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const helper = require('../utils/test_helper')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -36,15 +37,40 @@ describe('when there\'s initially some blogs saved', () => {
 })
 
 describe("addition of a new blog", () => {
+    let token
+
+    beforeEach(async () => {
+        User.deleteMany({})
+        const newUser = {
+            username: 'raceer',
+            name: 'net raceer',
+            password: 'you could never quess'
+        }
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: newUser.username,
+                password: newUser.password
+            })
+        
+        token = loginResponse.body.token
+    })
     test('new blog addition happens as expected', async () => {
         const title = "Addition happens as expected"
         const newBlog = {
             title: title,
             author: "me",
-            likes: 10
+            likes: 10,
+            url: 'ewoitwoei'
         }
         const response = await api
             .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
             .send(newBlog)
             .expect(201)
 
@@ -58,10 +84,12 @@ describe("addition of a new blog", () => {
         const title = "zero likes"
         const newBlog = {
             title: title,
-            author: "me"
+            author: "me",
+            url: '3928523oli'
         }
         const response = await api
             .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
             .send(newBlog)
             .expect(201)
         
@@ -74,9 +102,23 @@ describe("addition of a new blog", () => {
         }
         const response = await api
             .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
             .send(newBlog)
             .expect(400)
 })
+    test('addition of a new blog forbidden without token', async () => {
+        const title = "Addition happens as expected"
+        const newBlog = {
+            title: title,
+            author: "me",
+            likes: 10,
+            url: 'ewoitwoei'
+        }
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(401)
+    })
 })
 
 describe("deletion of a blog", () => {
@@ -84,7 +126,8 @@ describe("deletion of a blog", () => {
         const blogsAtStart = await helper.blogsInDb()
         const blogToDelete = blogsAtStart[0]
 
-        await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`).expect(204)
 
         const blogsAtEnd = await helper.blogsInDb()
 
