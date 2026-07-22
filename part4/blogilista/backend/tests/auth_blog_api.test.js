@@ -20,7 +20,7 @@ describe('when there is initially one user at db', () => {
         const response = await user.save()
     })
 
-    test.only('creation succeeds with a fresh username', async () => {
+    test('creation succeeds with a fresh username', async () => {
         const usersAtStart = await helper.usersInDb()
 
         const newUser = {
@@ -41,6 +41,51 @@ describe('when there is initially one user at db', () => {
         const usernames = usersAtEnd.map(u => u.username)
         assert(usernames.includes(newUser.username))
 
+    })
+
+    test('blog can be created and deleted, fails with empty credentials', async () => {
+        const newUser = {
+            username: 'raceer22',
+            name: 'net raceer',
+            password: 'you could never quess'
+        }
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+
+        const loginResponse = await api
+            .post('/api/login')
+            .send({
+                username: newUser.username,
+                password: newUser.password
+            })
+        
+        const token = loginResponse.body.token
+
+        const newBlog = {
+            title: "Addition happens as expected",
+            author: "me",
+            likes: 10,
+            url: "9283iguah"
+        }
+
+        const response = await api
+            .post('/api/blogs')
+            .auth(token, { type: 'bearer' })
+            .send(newBlog)
+            .expect(201)
+
+        const blogId = response.body.id
+
+        await api
+            .delete(`/api/blogs/${blogId}`)
+            .expect(401)
+
+        await api
+            .delete(`/api/blogs/${blogId}`)
+            .auth(token, { type: 'bearer' })
+            .expect(204)
     })
 
     test('duplpicate username causes an error', async () => {
